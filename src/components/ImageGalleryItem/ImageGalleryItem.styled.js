@@ -11,13 +11,7 @@ export const Image = styled.img`
   width: 100%;
   height: 260px;
   object-fit: cover;
-  background: linear-gradient(
-    0deg,
-    rgba(255, 247, 127, 1) 0%,
-    rgba(109, 156, 255, 1) 100%
-  );
-
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:is(:hover, :focus) {
     transform: scale(1.03);
