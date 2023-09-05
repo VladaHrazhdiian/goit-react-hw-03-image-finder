@@ -75,6 +75,7 @@ export default class App extends Component {
     const { queryInput } = evt.target.elements;
 
     const searchQuery = queryInput.value.trim();
+    
 
     if (searchQuery === this.state.searchQuery) {
       Notify.warning('You have already submitted this query.');
