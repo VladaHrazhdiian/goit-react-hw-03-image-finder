@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import Container from '@mui/material/Container';
 
@@ -9,20 +9,22 @@ import Button from './Button';
 
 import getImages from 'services/api';
 
-
 export default class App extends Component {
   state = {
     hits: [],
     page: 1,
     searchQuery: '',
     isLoading: false,
-    showLoadMoreBtn: false,
+    totalPages: 0,
   };
 
   componentDidUpdate(_, prevState) {
     const { searchQuery, page } = this.state;
 
-    if (prevState.searchQuery !== searchQuery || page !== prevState.page) {
+    if (
+      prevState.searchQuery !== searchQuery ||
+      (prevState.page !== page && page === 1)
+    ) {
       this.fetchImages();
     }
   }
@@ -43,8 +45,8 @@ export default class App extends Component {
         return;
       }
 
-      this.setState(({ hits }) => ({
-        hits: [...hits, ...response.hits],
+      this.setState((prevState) => ({
+        hits: page === 1 ? [...response.hits] : [...prevState.hits, ...response.hits],
         page,
         totalPages,
       }));
@@ -67,12 +69,18 @@ export default class App extends Component {
     }
   };
 
-  handleSubmit = evt => {
+  handleSubmit = (evt) => {
     evt.preventDefault();
 
     const { queryInput } = evt.target.elements;
 
     const searchQuery = queryInput.value.trim();
+
+    if (searchQuery === this.state.searchQuery) {
+      Notify.warning('You have already submitted this query.');
+      return;
+    }
+
     queryInput.value = '';
     const page = 1;
 
@@ -87,9 +95,14 @@ export default class App extends Component {
   };
 
   handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+    this.setState(
+      (prevState) => ({
+        page: prevState.page + 1,
+      }),
+      () => {
+        this.fetchImages();
+      }
+    );
   };
 
   scroll = () => {
